@@ -129,6 +129,7 @@ If following the quickstart, make sure this identifier matches what you used the
 
 - **`PROVIDER_GOOGLEQUICKSTART_GOOGLE_IMPERSONATE`**: An administrative email address on your organization's
 domain, the identity of which can be assumed by `sso`.
-- **`GOOGLE_SERVICE_ACCOUNT_JSON`**: The path to the JSON file downloaded at the time of
+- **`PROVIDER_GOOGLEQUICKSTART_GOOGLE_CREDENTIALS`**: The path to the JSON file downloaded at the time of
 service account creation above. There is no reason why this file should ever be accessed by any
 person or service other than `sso`; ensure that file permissions are set accordingly.
+- **`PROVIDER_GOOGLEQUICKSTART_GROUPCACHE_INTERVAL_REFRESH`**: The interval the group cache should refresh at. #TODO:set default/test?
