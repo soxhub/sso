@@ -130,10 +130,11 @@ func TestGoogleProviderRedeem(t *testing.T) {
 				AccessToken:  "a1234",
 				ExpiresIn:    10,
 				RefreshToken: "refresh12345",
-				IDToken:      "ignored prefix." + base64.URLEncoding.EncodeToString([]byte(`{"email": "michael.bland@gsa.gov", "email_verified":true, "name": "Michael Bland"}`)),
+				IDToken:      "ignored prefix." + base64.URLEncoding.EncodeToString([]byte(`{"email": "michael.bland@gsa.gov", "email_verified":true, "given_name": "Michael", "family_name": "Bland"}`)),
 			},
 			expectedSession: &sessions.SessionState{
-				Name:         "Michael Bland",
+				FirstName:    "Michael",
+				LastName:     "Bland",
 				Email:        "michael.bland@gsa.gov",
 				AccessToken:  "a1234",
 				RefreshToken: "refresh12345",
