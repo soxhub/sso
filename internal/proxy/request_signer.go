@@ -24,6 +24,8 @@ var signedHeaders = []string{
 	"Content-Type",
 	"Date",
 	"Authorization",
+	"X-Forwarded-First-Name",
+	"X-Forwarded-Last-Name",
 	"X-Forwarded-User",
 	"X-Forwarded-Email",
 	"X-Forwarded-Groups",

@@ -149,6 +149,8 @@ func (p *SSOProvider) Redeem(redirectURL, code string) (*sessions.SessionState, 
 		AccessToken  string `json:"access_token"`
 		RefreshToken string `json:"refresh_token"`
 		ExpiresIn    int64  `json:"expires_in"`
+		FirstName    string `json:"first_name"`
+		LastName     string `json:"last_name"`
 		Email        string `json:"email"`
 	}
 	err = json.Unmarshal(body, &jsonResponse)
@@ -168,8 +170,10 @@ func (p *SSOProvider) Redeem(redirectURL, code string) (*sessions.SessionState, 
 		LifetimeDeadline: extendDeadline(p.SessionLifetimeTTL),
 		ValidDeadline:    extendDeadline(p.SessionValidTTL),
 
-		Email: jsonResponse.Email,
-		User:  user,
+		FirstName: jsonResponse.FirstName,
+		LastName:  jsonResponse.LastName,
+		Email:     jsonResponse.Email,
+		User:      user,
 	}, nil
 }
 

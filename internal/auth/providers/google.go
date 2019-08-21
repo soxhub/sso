@@ -235,31 +235,42 @@ func (p *GoogleProvider) googleRequest(method, endpoint string, params url.Value
 	return nil
 }
 
-func emailFromIDToken(idToken string) (string, error) {
+func userInfoFromIDToken(idToken string) (string, string, string, error) {
 
 	// id_token is a base64 encode ID token payload
 	// https://developers.google.com/accounts/docs/OAuth2Login#obtainuserinfo
 	jwt := strings.Split(idToken, ".")
 	b, err := jwtDecodeSegment(jwt[1])
 	if err != nil {
-		return "", err
+		return "", "", "", err
 	}
 
-	var email struct {
+	fmt.Println(string(b))
+
+	var userInfo struct {
+		FirstName     string `json:"given_name"`
+		LastName      string `json:"family_name"`
 		Email         string `json:"email"`
 		EmailVerified bool   `json:"email_verified"`
 	}
-	err = json.Unmarshal(b, &email)
+	err = json.Unmarshal(b, &userInfo)
+	fmt.Println(userInfo)
 	if err != nil {
-		return "", err
+		return "", "", "", err
 	}
-	if email.Email == "" {
-		return "", errors.New("missing email")
+	if userInfo.Email == "" {
+		return "", "", "", errors.New("missing email")
 	}
-	if !email.EmailVerified {
-		return "", fmt.Errorf("email %s not listed as verified", email.Email)
+	if !userInfo.EmailVerified {
+		return "", "", "", fmt.Errorf("email %s not listed as verified", userInfo.Email)
 	}
-	return email.Email, nil
+	if userInfo.FirstName == "" {
+		return "", "", "", errors.New("missing first name")
+	}
+	if userInfo.LastName == "" {
+		return "", "", "", errors.New("missing last name")
+	}
+	return userInfo.FirstName, userInfo.LastName, userInfo.Email, nil
 }
 
 func jwtDecodeSegment(seg string) ([]byte, error) {
@@ -307,6 +318,7 @@ func (p *GoogleProvider) Redeem(redirectURL, code string) (*sessions.SessionStat
 	params.Add("client_secret", p.ClientSecret)
 	params.Add("redirect_uri", redirectURL)
 	params.Add("grant_type", "authorization_code")
+	params.Set("scope", p.Scope)
 
 	var response struct {
 		AccessToken  string `json:"access_token"`
@@ -321,7 +333,9 @@ func (p *GoogleProvider) Redeem(redirectURL, code string) (*sessions.SessionStat
 	}
 
 	var email string
-	email, err = emailFromIDToken(response.IDToken)
+	var firstName string
+	var lastName string
+	firstName, lastName, email, err = userInfoFromIDToken(response.IDToken)
 	if err != nil {
 		return nil, err
 	}
@@ -332,6 +346,8 @@ func (p *GoogleProvider) Redeem(redirectURL, code string) (*sessions.SessionStat
 
 		RefreshDeadline:  sessions.ExtendDeadline(time.Duration(response.ExpiresIn) * time.Second),
 		LifetimeDeadline: sessions.ExtendDeadline(p.SessionLifetimeTTL),
+		FirstName:        firstName,
+		LastName:         lastName,
 		Email:            email,
 	}, nil
 }
