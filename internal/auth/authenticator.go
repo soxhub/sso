@@ -50,6 +50,8 @@ type redeemResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 	ExpiresIn    int64  `json:"expires_in"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
 	Email        string `json:"email"`
 }
 
@@ -655,6 +657,8 @@ func (p *Authenticator) Redeem(rw http.ResponseWriter, req *http.Request) {
 		AccessToken:  session.AccessToken,
 		RefreshToken: session.RefreshToken,
 		ExpiresIn:    int64(session.RefreshDeadline.Sub(time.Now()).Seconds()),
+		FirstName:    session.FirstName,
+		LastName:     session.LastName,
 		Email:        session.Email,
 	}
 

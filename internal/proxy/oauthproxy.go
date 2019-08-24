@@ -29,6 +29,8 @@ var SignatureHeaders = []string{
 	"Content-Type",
 	"Date",
 	"Authorization",
+	"X-Forwarded-First-Name",
+	"X-Forwarded-Last-Name",
 	"X-Forwarded-User",
 	"X-Forwarded-Email",
 	"X-Forwarded-Groups",
@@ -797,12 +799,16 @@ func (p *OAuthProxy) Authenticate(rw http.ResponseWriter, req *http.Request) (er
 		req.Header.Set(key, val)
 	}
 
+	fmt.Println(session)
+
 	req.Header.Set("X-Forwarded-User", session.User)
 
 	if p.passAccessToken && session.AccessToken != "" {
 		req.Header.Set("X-Forwarded-Access-Token", session.AccessToken)
 	}
 
+	req.Header.Set("X-Forwarded-First-Name", session.FirstName)
+	req.Header.Set("X-Forwarded-Last-Name", session.LastName)
 	req.Header.Set("X-Forwarded-Email", session.Email)
 	req.Header.Set("X-Forwarded-Groups", strings.Join(session.Groups, ","))
 

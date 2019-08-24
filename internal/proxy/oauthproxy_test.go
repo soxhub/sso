@@ -88,6 +88,8 @@ func testSession() *sessions.SessionState {
 	theFuture := time.Now().AddDate(100, 100, 100)
 
 	return &sessions.SessionState{
+		FirstName:   "Michael",
+		LastName:    "Bland",
 		Email:       "michael.bland@gsa.gov",
 		AccessToken: "my_access_token",
 		Groups:      []string{"foo", "bar"},
@@ -396,10 +398,12 @@ func TestHeadersSentToUpstreams(t *testing.T) {
 
 			session := testSession()
 			expectedHeaders := map[string]string{
-				"X-Forwarded-Email":  session.Email,
-				"X-Forwarded-User":   session.User,
-				"X-Forwarded-Groups": strings.Join(session.Groups, ","),
-				"Cookie":             tc.expectedCookieHeader,
+				"X-Forwarded-Email":      session.Email,
+				"X-Forwarded-User":       session.User,
+				"X-Forwarded-First-Name": session.FirstName,
+				"X-Forwarded-Last-Name":  session.LastName,
+				"X-Forwarded-Groups":     strings.Join(session.Groups, ","),
+				"Cookie":                 tc.expectedCookieHeader,
 			}
 
 			for key, val := range expectedHeaders {
